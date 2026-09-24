@@ -1,0 +1,12 @@
+node_modules/
+.wrangler/
+dist/
+.dev.vars*
+.env*
+*.log
+.console-password
+.venv*/
+python_modules/
+__pycache__/
+*.pyc
+src/console_assets.py

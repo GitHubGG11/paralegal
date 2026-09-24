@@ -1,0 +1,17 @@
+{
+  "name": "twilio-paralegal",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "PATH=\"$PWD/.venv/bin:$PATH\" .venv/bin/pywrangler dev",
+    "deploy": "PATH=\"$PWD/.venv/bin:$PATH\" .venv/bin/pywrangler deploy",
+    "check": "python3 -m unittest discover -s tests -v",
+    "dry-run": "PATH=\"$PWD/.venv/bin:$PATH\" .venv/bin/pywrangler deploy --dry-run --outdir dist/python",
+    "test:runtime": "node test/runtime-smoke.js && node test/runtime-agent.js && node test/runtime-relay.js"
+  },
+  "devDependencies": {
+    "twilio": "^6.1.1",
+    "wrangler": "^4.137.0",
+    "ws": "8.21.0"
+  }
+}
