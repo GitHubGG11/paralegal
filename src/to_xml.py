@@ -1,5 +1,7 @@
 from xml.etree.ElementTree import Element, SubElement, tostring
 
+HOOK = "message_hook"
+
 def voice_xml():
     response = Element("Response")
 
@@ -12,10 +14,11 @@ def voice_xml():
     return '<?xml version="1.0" encoding="UTF-8"?>' + xml
 
 def webhook_xml():
+    '''Returns the webhook for the '''
     response = Element("Response")
 
     connect = SubElement(response, "Connect")
-    SubElement(connect, "ConversationRelay", url="wss://twilio-paralegal-learning.gene-huntley2.workers.dev/message_hook")
+    SubElement(connect, "ConversationRelay", url=f"wss://twilio-paralegal-learning.gene-huntley2.workers.dev/{HOOK}")
 
     xml = tostring(response, encoding="unicode")
 

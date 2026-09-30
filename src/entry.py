@@ -1,11 +1,13 @@
 """Portable health-check behavior used to prove the unit-test setup works."""
 from workers import WorkerEntrypoint, Response
 from urllib.parse import urlparse, parse_qs
-from to_xml import voice_xml, webhook_xml
-from js import WebSocketPair
+from to_xml import webhook_xml, HOOK
+from js import WebSocketPair, console
+from processing import on_message
 from pyodide.ffi import create_proxy
-import json
 
+# logger = logging.getLogger(__name__)
+# logging.basicConfig(level=logging.INFO)
 
 class Default(WorkerEntrypoint):
     async def fetch(self, request):
@@ -29,7 +31,8 @@ class Default(WorkerEntrypoint):
                     "Cache-Control": "no-store",
             })
 
-        if url.path == "/message_hook":
+        if url.path == f"/{HOOK}":
+
             upgrade = request.headers.get("Upgrade")
             if not upgrade or upgrade.lower() != "websocket":
                 return Response("Expected a valid webhook!", status=426)
@@ -37,17 +40,7 @@ class Default(WorkerEntrypoint):
             client, server = WebSocketPair.new().object_values()
             server.accept()
 
-            def on_message(event):
-                message = json.loads(event.data)
-                if message.get("type") == "prompt":
-                    data = message["voicePrompt"]
-                    server.send(json.dumps({
-                        "type": "text",
-                        "token": f"You said {data}.",
-                        "last": True,
-                    }))
-
-            handler = create_proxy(on_message)
+            handler = create_proxy(lambda event: on_message(server, event))
             server.addEventListener("message", handler)
 
             return Response(None, status=101, web_socket=client)
